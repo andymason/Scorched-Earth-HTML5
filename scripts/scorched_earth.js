@@ -1,5 +1,6 @@
 /*
-    Title:      Scorched Earth HTML5 Game
+    Title:      Scorched Earth HTML5 Game JavaScript
+    File:       scorched_earth.js
     Description:
         A clone of the classic DOS game Scorched Earth, remade
         using JavaScript and HTML 5 <canvas> element.
@@ -45,24 +46,45 @@ var ScorchedEarth = (function() {
     
     var colours = ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)', 'rgb(255, 0, 255)'];
 
-    ctx.fillStyle  = 'rgb(0, 0, 0)';
-    ctx.fillRect(0, 0, width, height);
+    
     // Private
     function test() {
         alert('here');
     }
     
-    return {
-        method: function(msg) {
-            alert(msg);
+    return {        
+        drawSky: function() {
+            var bands = 30;
+            
+            // Set black background
+            ctx.fillStyle  = 'rgb(0, 0, 0)';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Vertical offset
+            var v_offset = 100;
+            
+            var shade = Math.round(255 / bands);
+            var band_height = Math.round((height - v_offset) / bands);
+            var colour = 0;
+            // Loop bands and adding them to the canvas
+            for (var i=0; i<bands; i++) {
+                ctx.fillStyle  = 'rgb(' + colour + ', 0, 0)';
+                ctx.fillRect(0, v_offset + (band_height * i), width, band_height);
+                colour += shade;
+            }
         },
         
         drawLand: function() {
             // Clear land array
             land = [];
-            // Set the colour of the ground
-            ctx.fillStyle  = 'rgb(255, 255, 255)';
+            
+            // Bands count and colour shade
+            var bands = 10;
+            var shade = Math.round(150 / bands);
+            
+            // Random horizontal shift
             var hoz_shift = Math.round((Math.random() * width));
+            
             // Loop through each pixel and draw the land
             for (var i=0; i < width; i++) {
                 // Calculate Y position
@@ -71,8 +93,31 @@ var ScorchedEarth = (function() {
                 var frequency = Math.sin((i+hoz_shift)/100) 
                 var ypos = Math.round((frequency * amplitude) + shift);
                 
-                // Draw the rectangle onto the canvas
-                ctx.fillRect(i, ypos, 1, height-ypos);
+                // Calculate band height
+                var block_height = height-ypos;
+                var band_height = Math.round((block_height / 4) / bands);
+                
+                // Set the colour of the ground
+                ctx.fillStyle  = 'rgb(255, 255, 255)';
+                
+                var col = 255;
+                var new_ypos = 0;
+                
+                // Draw bands on the block
+                for (var n=0; n<bands; n++) {
+                    ctx.fillStyle  = 'rgb(' + col + ',' + col + ',' + col +')';
+                    
+                    new_ypos = ypos + (band_height * n);
+                    
+                    // Draw the rectangle onto the canvas
+                    ctx.fillRect(i, new_ypos, 1, band_height);
+                    // Decrease colour by one shade
+                    col -= shade;
+                }
+                
+                ctx.fillStyle  = 'rgb(' + col + ',' + col + ',' + col +')';
+                ctx.fillRect(i, new_ypos+band_height, 1, height-ypos);
+                
                 
                 // Add land slice to array
                 land.push({xpos: i, ypos: ypos});
@@ -144,9 +189,10 @@ var ScorchedEarth = (function() {
     }
 })()
 
+ScorchedEarth.drawSky();
 ScorchedEarth.drawLand();
 ScorchedEarth.addTanks(2);
-ScorchedEarth.fireBullet(0, 30, 50);
+ScorchedEarth.fireBullet(0, 50, 85);
 ScorchedEarth.fireBullet(1, 60, 30);
 //ScorchedEarth.outputFPS(23);
 ScorchedEarth.animate();
