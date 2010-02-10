@@ -33,7 +33,7 @@ var ScorchedEarth = (function() {
     var ctx = document.getElementById('game_board').getContext('2d');
     var width = ctx.canvas.width;
     var height = ctx.canvas.height;
-    var gravity = 9.8 / 1;
+    var gravity = 0.98;
     var fps = 1000 / 30; // 30fps
     var land = [];
     var tanks = [];
@@ -43,7 +43,6 @@ var ScorchedEarth = (function() {
     }
     
     var count = 0;
-    
     var colours = ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)', 'rgb(255, 0, 255)'];
 
     
@@ -95,7 +94,7 @@ var ScorchedEarth = (function() {
                 
                 // Calculate band height
                 var block_height = height-ypos;
-                var band_height = Math.round((block_height / 4) / bands);
+                var band_height = (block_height / 3) / bands;
                 
                 // Set the colour of the ground
                 ctx.fillStyle  = 'rgb(255, 255, 255)';
@@ -150,13 +149,14 @@ var ScorchedEarth = (function() {
             
             // Line Colour
             ctx.strokeStyle = colours[tank_index];
-  
+            console.log('land y=%d, ypos=%d', land[Math.round(xPos)].ypos, yPos);
             
-            for (var i=0; i < 100; i++) {
+            while (yPos <= land[Math.round(xPos)].ypos || xPos > width || xPos < 0 ) {
                 ctx.beginPath();
                 ctx.moveTo(xPos, yPos);
-                xPos += xSpeed;
-                yPos -= ySpeed;
+                xPos += xSpeed / 10;
+                yPos -= ySpeed / 10;
+
                 ctx.lineTo(xPos, yPos);
                 ctx.closePath();
                 ctx.stroke();
