@@ -40,16 +40,10 @@ var ScorchedEarth = (function() {
     var tank = {
         width: 15,
         height: 7
-    }
+    };
     
     var count = 0;
     var colours = ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)', 'rgb(255, 0, 255)'];
-
-    
-    // Private
-    function test() {
-        alert('here');
-    }
     
     return {        
         drawSky: function() {
@@ -66,7 +60,7 @@ var ScorchedEarth = (function() {
             var band_height = Math.round((height - v_offset) / bands);
             var colour = 0;
             // Loop bands and adding them to the canvas
-            for (var i=0; i<bands; i++) {
+            for (var i=0; i<bands; i += 1) {
                 ctx.fillStyle  = 'rgb(' + colour + ', 0, 0)';
                 ctx.fillRect(0, v_offset + (band_height * i), width, band_height);
                 colour += shade;
@@ -85,11 +79,11 @@ var ScorchedEarth = (function() {
             var hoz_shift = Math.round((Math.random() * width));
             
             // Loop through each pixel and draw the land
-            for (var i=0; i < width; i++) {
+            for (var i=0; i < width; i += 1) {
                 // Calculate Y position
                 var shift = height/1.5;
                 var amplitude = (height / 10);
-                var frequency = Math.sin((i+hoz_shift)/100) 
+                var frequency = Math.sin((i+hoz_shift)/100);
                 var ypos = Math.round((frequency * amplitude) + shift);
                 
                 // Calculate band height
@@ -103,7 +97,7 @@ var ScorchedEarth = (function() {
                 var new_ypos = 0;
                 
                 // Draw bands on the block
-                for (var n=0; n<bands; n++) {
+                for (var n=0; n<bands; n += 1) {
                     ctx.fillStyle  = 'rgb(' + col + ',' + col + ',' + col +')';
                     
                     new_ypos = ypos + (band_height * n);
@@ -126,7 +120,7 @@ var ScorchedEarth = (function() {
         addTanks: function(num) {
             // Clear current tanks
             tanks = [];
-            for (var i=0; i<num; i++) {                
+            for (var i=0; i<num; i += 1) {                
                 // Generate random X position
                 var xpos = Math.round(Math.random() * width);
                 
@@ -136,7 +130,6 @@ var ScorchedEarth = (function() {
                 // Store in tanks array
                 tanks.push({xpos: xpos, ypos: land[xpos].ypos});
             }
-            console.log(tanks);
         },
         
         fireBullet: function(tank_index, vol, ang) {
@@ -149,7 +142,6 @@ var ScorchedEarth = (function() {
             
             // Line Colour
             ctx.strokeStyle = colours[tank_index];
-            console.log('land y=%d, ypos=%d', land[Math.round(xPos)].ypos, yPos);
             
             while (yPos <= land[Math.round(xPos)].ypos || xPos > width || xPos < 0 ) {
                 ctx.beginPath();
@@ -172,11 +164,10 @@ var ScorchedEarth = (function() {
             var end = now + fps;
             var count = 0;
             while (now < end) {
-                count++;
+                count += 1;
                 d = new Date();
                 now = d.getTime();
             }
-            console.log('count = %d', count);
             
             //setInterval(ScorchedEarth.outputFPS, fps)
         },
@@ -184,10 +175,10 @@ var ScorchedEarth = (function() {
         outputFPS: function() {
             ctx.fillStyle = 'rgb(255, 255, 255)';
             ctx.fillText('FPS: ' + count , count, count);
-            count++;
+            count += 1;
         }
-    }
-})()
+    };
+})();
 
 ScorchedEarth.drawSky();
 ScorchedEarth.drawLand();
