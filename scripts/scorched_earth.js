@@ -43,7 +43,7 @@ var ScorchedEarth = (function() {
     };
     
     var count = 0;
-    var colours = ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)', 'rgb(255, 0, 255)'];
+    var colours = ['rgb(255, 255, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)', 'rgb(255, 0, 255)'];
     
     return {        
         drawSky: function() {
@@ -133,28 +133,55 @@ var ScorchedEarth = (function() {
         },
         
         fireBullet: function(tank_index, vol, ang) {
-            var xPos = tanks[tank_index].xpos;
-            var yPos = tanks[tank_index].ypos;
+            tanks[tank_index].bulletXPos = tanks[tank_index].xpos;
+            tanks[tank_index].bulletYPos = tanks[tank_index].ypos;
+            
             var verlocity = vol;
             var angle = ang * (Math.PI / 180); // Convert to radians;
-            var xSpeed = (Math.cos(angle) * verlocity); 
-            var ySpeed = (Math.sin(angle) * verlocity);
+            tanks[tank_index].bulletXSpeed = (Math.cos(angle) * verlocity); 
+            tanks[tank_index].bulletYSpeed = (Math.sin(angle) * verlocity);
             
-            // Line Colour
-            ctx.strokeStyle = colours[tank_index];
-            
-            while (yPos <= land[Math.round(xPos)].ypos || xPos > width || xPos < 0 ) {
-                ctx.beginPath();
-                ctx.moveTo(xPos, yPos);
-                xPos += xSpeed / 10;
-                yPos -= ySpeed / 10;
 
-                ctx.lineTo(xPos, yPos);
-                ctx.closePath();
-                ctx.stroke();
-                
-                ySpeed -= gravity;
+
+            ScorchedEarth.intervalBullet = setInterval(function() { ScorchedEarth.drawBullet(tank_index)}, 30);
+   
+        },
+        
+        drawBullet: function(tank_index) {
+            var xpos = tanks[tank_index].bulletXPos;
+            var ypos = tanks[tank_index].bulletYPos;
+            var xspeed = tanks[tank_index].bulletXSpeed;
+            var yspeed = tanks[tank_index].bulletYSpeed;
+
+            
+            if (xpos >= width || xpos <= 0 ) {
+                clearInterval(ScorchedEarth.intervalBullet);
+                return;
+            } else if (ypos > land[Math.floor(xpos)].ypos) {
+                clearInterval(ScorchedEarth.intervalBullet);
+                return;
             }
+            
+            
+            ctx.strokeStyle = colours[tank_index];
+            // Draw
+            ctx.beginPath();
+            
+            ctx.moveTo(xpos, ypos);
+            xpos += xspeed / 10;
+            ypos -= yspeed / 10;
+
+            ctx.lineTo(xpos, ypos);
+            ctx.closePath();
+            ctx.stroke();
+            
+            yspeed -= gravity;
+
+            tanks[tank_index].bulletXPos = xpos;
+            tanks[tank_index].bulletYPos = ypos;
+            tanks[tank_index].bulletXSpeed = xspeed;
+            tanks[tank_index].bulletYSpeed = yspeed;
+            return;
             
         },
         
@@ -183,7 +210,7 @@ var ScorchedEarth = (function() {
 ScorchedEarth.drawSky();
 ScorchedEarth.drawLand();
 ScorchedEarth.addTanks(2);
-ScorchedEarth.fireBullet(0, 50, 85);
+//ScorchedEarth.fireBullet(0, 40, 45);
 ScorchedEarth.fireBullet(1, 60, 30);
 //ScorchedEarth.outputFPS(23);
 ScorchedEarth.animate();
