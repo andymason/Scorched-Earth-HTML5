@@ -84,11 +84,11 @@ var ScorchedEarth = (function() {
                 var shift = height/1.5;
                 var amplitude = (height / 10);
                 var frequency = Math.sin((i+hoz_shift)/100);
-                var ypos = Math.round((frequency * amplitude) + shift);
+                var ypos = Math.floor((frequency * amplitude) + shift);
                 
                 // Calculate band height
                 var block_height = height-ypos;
-                var band_height = (block_height / 3) / bands;
+                var band_height = Math.floor((block_height / 3) / bands);
                 
                 // Set the colour of the ground
                 ctx.fillStyle  = 'rgb(255, 255, 255)';
@@ -104,10 +104,12 @@ var ScorchedEarth = (function() {
                     
                     // Draw the rectangle onto the canvas
                     ctx.fillRect(i, new_ypos, 1, band_height);
+
                     // Decrease colour by one shade
                     col -= shade;
                 }
                 
+                // Fill in the remainder of the land
                 ctx.fillStyle  = 'rgb(' + col + ',' + col + ',' + col +')';
                 ctx.fillRect(i, new_ypos+band_height, 1, height-ypos);
                 
@@ -124,6 +126,7 @@ var ScorchedEarth = (function() {
                 // Generate random X position
                 var xpos = Math.round(Math.random() * width);
                 
+                // Draw the tank on the canvas
                 ctx.fillStyle = colours[i];
                 ctx.fillRect(xpos - tank.width/2, land[xpos].ypos - tank.height, tank.width, tank.height);
                 
@@ -133,27 +136,30 @@ var ScorchedEarth = (function() {
         },
         
         fireBullet: function(tank_index, vol, ang) {
+            // Set initial start position for the bullet
             tanks[tank_index].bulletXPos = tanks[tank_index].xpos;
             tanks[tank_index].bulletYPos = tanks[tank_index].ypos;
             
+            // Calculate the X and Y speeds
             var verlocity = vol;
             var angle = ang * (Math.PI / 180); // Convert to radians;
             tanks[tank_index].bulletXSpeed = (Math.cos(angle) * verlocity); 
             tanks[tank_index].bulletYSpeed = (Math.sin(angle) * verlocity);
             
-
-
+            // Animate the bullet path
             ScorchedEarth.intervalBullet = setInterval(function() { ScorchedEarth.drawBullet(tank_index)}, 30);
    
         },
         
         drawBullet: function(tank_index) {
+            // Get the bullet variables *TODO* Clean up
             var xpos = tanks[tank_index].bulletXPos;
             var ypos = tanks[tank_index].bulletYPos;
             var xspeed = tanks[tank_index].bulletXSpeed;
             var yspeed = tanks[tank_index].bulletYSpeed;
 
             
+            // Clear interval if bullet hits land or edge of canvas
             if (xpos >= width || xpos <= 0 ) {
                 clearInterval(ScorchedEarth.intervalBullet);
                 return;
@@ -162,27 +168,33 @@ var ScorchedEarth = (function() {
                 return;
             }
             
-            
+            // Start drawing the bullets path
             ctx.strokeStyle = colours[tank_index];
-            // Draw
             ctx.beginPath();
             
+            // Move
             ctx.moveTo(xpos, ypos);
+            
+            // Set the new coordinates
             xpos += xspeed / 10;
             ypos -= yspeed / 10;
-
+            
+            // Draw line to the new coordinates
             ctx.lineTo(xpos, ypos);
             ctx.closePath();
             ctx.stroke();
             
+            // Affect bullet with gravity
             yspeed -= gravity;
-
+            
+            // Store new bullet variables *TODO* Clean up
             tanks[tank_index].bulletXPos = xpos;
             tanks[tank_index].bulletYPos = ypos;
             tanks[tank_index].bulletXSpeed = xspeed;
             tanks[tank_index].bulletYSpeed = yspeed;
-            return;
             
+            // End
+            return;
         },
         
         animate: function() {
