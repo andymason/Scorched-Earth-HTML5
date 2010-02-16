@@ -139,7 +139,7 @@ var ScorchedEarth = (function() {
             // Set initial start position for the bullet
             tanks[tank_index].bulletXPos = tanks[tank_index].xpos;
             tanks[tank_index].bulletYPos = tanks[tank_index].ypos;
-            
+
             // Calculate the X and Y speeds
             var verlocity = vol;
             var angle = ang * (Math.PI / 180); // Convert to radians;
@@ -147,53 +147,41 @@ var ScorchedEarth = (function() {
             tanks[tank_index].bulletYSpeed = (Math.sin(angle) * verlocity);
             
             // Animate the bullet path
-            ScorchedEarth.intervalBullet = setInterval(function() { ScorchedEarth.drawBullet(tank_index)}, 30);
+            intervalBullet = setInterval(this.drawBullet, 30, tank_index, tanks[tank_index]);
    
         },
         
-        drawBullet: function(tank_index) {
-            // Get the bullet variables *TODO* Clean up
-            var xpos = tanks[tank_index].bulletXPos;
-            var ypos = tanks[tank_index].bulletYPos;
-            var xspeed = tanks[tank_index].bulletXSpeed;
-            var yspeed = tanks[tank_index].bulletYSpeed;
+        drawBullet: function(tnk_index, tnk) {
 
-            
             // Clear interval if bullet hits land or edge of canvas
-            if (xpos >= width || xpos <= 0 ) {
+            if (tnk.bulletXPos >= width || tnk.bulletXPos <= 0 ) {
                 clearInterval(ScorchedEarth.intervalBullet);
                 return;
-            } else if (ypos > land[Math.floor(xpos)].ypos) {
+            } else if (tnk.bulletYPos > land[Math.floor(tnk.bulletXPos)].ypos) {
+                // BOOM! The bullet hit the ground.
                 clearInterval(ScorchedEarth.intervalBullet);
                 return;
             }
             
             // Start drawing the bullets path
-            ctx.strokeStyle = colours[tank_index];
+            ctx.strokeStyle = colours[tnk_index];
             ctx.beginPath();
             
             // Move
-            ctx.moveTo(xpos, ypos);
+            ctx.moveTo(tnk.bulletXPos, tnk.bulletYPos);
             
             // Set the new coordinates
-            xpos += xspeed / 10;
-            ypos -= yspeed / 10;
+            tnk.bulletXPos += tnk.bulletXSpeed / 10;
+            tnk.bulletYPos -= tnk.bulletYSpeed / 10;
             
             // Draw line to the new coordinates
-            ctx.lineTo(xpos, ypos);
+            ctx.lineTo(tnk.bulletXPos, tnk.bulletYPos);
             ctx.closePath();
             ctx.stroke();
             
             // Affect bullet with gravity
-            yspeed -= gravity;
+            tnk.bulletYSpeed -= gravity;
             
-            // Store new bullet variables *TODO* Clean up
-            tanks[tank_index].bulletXPos = xpos;
-            tanks[tank_index].bulletYPos = ypos;
-            tanks[tank_index].bulletXSpeed = xspeed;
-            tanks[tank_index].bulletYSpeed = yspeed;
-            
-            // End
             return;
         },
         
