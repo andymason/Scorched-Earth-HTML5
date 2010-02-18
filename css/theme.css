@@ -109,3 +109,23 @@ H2#sub_title {
 #game_board {
     margin-bottom: 1em;
 }
+
+/*	Controls
+----------------------------------------------------------------------*/
+.button {
+    background-color: #999;
+    border-left: 2px solid #EEE;
+    border-top: 2px solid #EEE;
+    border-bottom: 2px solid #666;
+    border-right: 2px solid #666;
+    padding: 4px 5px;
+    float: left;
+}
+
+.number {
+    background-color: #000;
+    padding: 4px 5px;
+    float: left;
+    width: 2em;
+    text-align: center;
+}

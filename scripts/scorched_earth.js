@@ -28,11 +28,13 @@
     
 */
 
-var ScorchedEarth = (function() {
+var SEarth = (function() {
     // Private Vars
     var ctx = document.getElementById('game_board').getContext('2d');
     var width = ctx.canvas.width;
     var height = ctx.canvas.height;
+    var power = 0;
+    var angle = 0;
     var gravity = 0.98;
     var fps = 1000 / 30; // 30fps
     var land = [];
@@ -155,11 +157,11 @@ var ScorchedEarth = (function() {
 
             // Clear interval if bullet hits land or edge of canvas
             if (tnk.bulletXPos >= width || tnk.bulletXPos <= 0 ) {
-                clearInterval(ScorchedEarth.intervalBullet);
+                clearInterval(SEarth.intervalBullet);
                 return;
             } else if (tnk.bulletYPos > land[Math.floor(tnk.bulletXPos)].ypos) {
                 // BOOM! The bullet hit the ground.
-                clearInterval(ScorchedEarth.intervalBullet);
+                clearInterval(SEarth.intervalBullet);
                 return;
             }
             
@@ -203,14 +205,65 @@ var ScorchedEarth = (function() {
             ctx.fillStyle = 'rgb(255, 255, 255)';
             ctx.fillText('FPS: ' + count , count, count);
             count += 1;
+        },
+        
+        addControls: function() {
+            // Collect the DOM elements
+            btnPowerDown = document.getElementById('power_down');
+            btnPowerUp = document.getElementById('power_up');
+            btnPowerNum = document.getElementById('power_number');
+            btnAngleDown = document.getElementById('angle_down');
+            btnAngleUp = document.getElementById('angle_up');
+            btnAngleNum = document.getElementById('angle_number');
+            btnFireNum = document.getElementById('fire_button');
+            
+            // Add Events
+            this.addEvent(btnPowerDown, 'click', function() {SEarth.alterValue('power', btnPowerNum, -1)});
+            this.addEvent(btnPowerUp, 'click', function() {SEarth.alterValue(SEarth.power, btnPowerNum, +1)});
+        },
+        
+        addEvent: function(elm, event, func) {
+            elm.addEventListener(event, func, false);
+        },
+        
+        alterValue: function(unit, elm, value) {
+            
+            // Prevent power going below 0
+            if ((unit + value <= 0) || (unit + value >= 100)) {
+                return;
+            }
+            
+            console.log('unit %d, and val = %d', unit, value);
+            
+            // Increase power and update DOM
+            unit += value;
+            elm.innerHTML = unit;
+            
+        },
+        
+        init: function() {
+            this.drawSky();
+            this.drawLand();
+            this.addTanks(2);
+            this.fireBullet(1, 60, 30);
+            this.addControls();
+            
         }
     };
 })();
 
+
+// Render when the DOM is ready
+window.onload = function() {
+    SEarth.init();
+}
+
+/*
 ScorchedEarth.drawSky();
 ScorchedEarth.drawLand();
 ScorchedEarth.addTanks(2);
 //ScorchedEarth.fireBullet(0, 40, 45);
 ScorchedEarth.fireBullet(1, 60, 30);
 //ScorchedEarth.outputFPS(23);
-ScorchedEarth.animate();
+//ScorchedEarth.animate();
+*/
