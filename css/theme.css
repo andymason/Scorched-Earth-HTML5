@@ -70,10 +70,12 @@ table {
 /*	Common HTML styles
 ----------------------------------------------------------------------*/
 BODY {
+    /*
     background-color: #111;
     color: #FFF;
     font-family: arial, helvetica, sans-serif;
     font-size: 0.83em;
+    */
 }
 
 /*	Page Structure
